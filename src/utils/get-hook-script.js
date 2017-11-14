@@ -3,6 +3,7 @@
 const normalize = require('normalize-path')
 const stripIndent = require('strip-indent')
 const pkg = require('../../package.json')
+const path = require('path')
 
 function platformSpecific() {
   // On OS X and Linux, try to use nvm if it's installed
@@ -11,10 +12,28 @@ function platformSpecific() {
     // Node standard installation path /c/Program Files/nodejs
     // for GUI apps
     // https://github.com/typicode/husky/issues/49
+    const standardNodePath = '/c/Program Files/nodejs'
+    // And add Node process installation path to hook PATH
+    const currentNodePath = path.dirname(process.argv[0])
+    const nodePathStruct = path.parse(process.argv[0])
+    const unixcizedCurrentNodePath = [
+      '' /* gains first '/' */,
+      nodePathStruct.root
+        .replace(/:/g, '')
+        .replace(/\\/g, '')
+        .toLowerCase() /* strips ':\' keeping drive letter and lowercasing it */,
+      currentNodePath
+        .substring(nodePathStruct.root.length)
+        .replace(/\\/g, '/') /* removes root and flips separator */
+    ].join('/')
+    const newPath = ['$PATH', standardNodePath]
+    if (standardNodePath !== unixcizedCurrentNodePath) {
+      newPath.push(unixcizedCurrentNodePath)
+    }
     return stripIndent(
       `
       # Node standard installation
-      export PATH="$PATH:/c/Program Files/nodejs"`
+      export PATH="${newPath.join(':')}"`
     )
   } else {
     // Using normalize to support ' in path

@@ -6,6 +6,10 @@
 * Support `HUSKY_SKIP_INSTALL` environment variable for skipping git hooks installation
 * Drop `nvm` installed with `brew` support as it's not supported by `nvm` itself (see [creationix/nvm#important-notes](https://github.com/creationix/nvm#important-notes)), `nvm` standard installation is still supported though
 
+## 0.14.4
+
+* Fix node not in `PATH` for Windows
+
 ## 0.14.3
 
 * Fix handle space in `PATH` [#150](https://github.com/typicode/husky/pull/114)
